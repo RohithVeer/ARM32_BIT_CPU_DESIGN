@@ -203,7 +203,8 @@ Released under the **MIT License**.
 ---
 
 ## Acknowledgments
-This project is derived from the educational ARM architecture presented in **Digital Design and Computer Architecture — ARM Edition** (Harris & Harris).  
-Verified using **Vivado**, **Icarus Verilog**, and **EDAPlayground**.  
+
+- This project is derived from the educational ARM architecture presented in **Digital Design and Computer Architecture — ARM Edition** (Harris & Harris).  
+- Verified using **Vivado**, **Icarus Verilog**, and **EDAPlayground**.  
 ---
 
