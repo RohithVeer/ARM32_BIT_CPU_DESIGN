@@ -1,209 +1,209 @@
-ARM32-BIT CPU — RTL Design (Verilog + SystemVerilog)
-Project Overview
+# ARM32-BIT CPU — RTL Design (Verilog + SystemVerilog)
 
-This repository contains a complete ARM32-bit CPU implemented using Verilog/SystemVerilog, verified on Vivado 2025.1 and EDAPlayground.
-The design follows a simplified ARM architecture and implements:
+---
 
-32-bit datapath
+## Project Overview
+This repository contains a complete **ARM32-bit CPU** designed using **Verilog/SystemVerilog** and verified using **Vivado 2025.1** and **EDAPlayground**.  
+The CPU follows a simplified educational ARM architecture (from *Harris & Harris: Digital Design and Computer Architecture — ARM Edition*), implementing:
 
-Instruction fetch → decode → execute
+- 32-bit datapath  
+- Instruction Fetch → Decode → Execute flow  
+- ARM flags (N, Z, C, V)  
+- ALU operations — ADD, SUB, AND, OR  
+- Conditional execution  
+- Register file (R0–R15 with PC+8 behavior)  
+- IMEM (instruction memory)  
+- DMEM (data memory)  
+- Complete CPU integration with a testbench  
 
-ALU operations (ADD, SUB, AND, OR)
+All RTL modules are complete, functional, and verified.
 
-ARM conditional execution (N, Z, C, V)
+---
 
-Branch logic and PC update
 
-Register file (R0–R15)
 
-Separate IMEM & DMEM
+---
 
-The CPU successfully executes the reference program from Digital Design and Computer Architecture — ARM Edition (Harris & Harris).
+## Module Details
 
-Module Details
-ALU (Arithmetic Logic Unit)
+### **ALU — Arithmetic Logic Unit**
+- Functions: ADD, SUB, AND, OR  
+- Inputs: `SrcA[31:0]`, `SrcB[31:0]`, `ALUControl[1:0]`  
+- Outputs: `ALUResult[31:0]`, `ALUFlags[3:0]`  
+- Flags generated:  
+  - N (Negative)  
+  - Z (Zero)  
+  - C (Carry)  
+  - V (Overflow)  
+- Verified in EDAPlayground & Vivado  
 
-Operations: ADD, SUB, AND, OR
+---
 
-Outputs: 32-bit result + ARM flags (N, Z, C, V)
+### **Datapath**
+Includes:
+- Program Counter (PC)
+- PC increment logic (PC → PC+4 → PC+8)
+- Register File (R0–R15)
+- ALU
+- Immediate Extender
+- MUX structures
+- Write-back path
+
+**Status:** Verified and stable.
+
+---
+
+### **Controller**
+Contains:
+- Main decoder  
+- ALU decoder  
+- Conditional execution logic  
 
-Status:  Verified (Vivado + EDAPlayground)
+Generates:
+- RegWrite  
+- MemWrite  
+- ImmSrc  
+- ALUSrc  
+- FlagW  
+- MemtoReg  
+- PCSrc  
+- RegSrc  
 
-Datapath
+**Status:** Verified.
 
-PC logic (PC+4, PC+8)
+---
 
-MUX routing and control signal handling
+### **Instruction Memory (IMEM)**
+- 64 × 32-bit  
 
-Register file interface
+- Works correctly in EDAPlayground  
+- Vivado requires correct file placement (explained below)
 
-ALU interface
+---
 
-Status:  Verified
+### **Data Memory (DMEM)**
+- 64 × 32-bit RAM  
+- Write-enable controlled by `MemWrite`  
+- Verified.
 
-Controller + Decoder
+---
 
-Generates all control signals:
-RegWrite, ALUSrc, MemWrite, MemtoReg, PCSrc, FlagW
+### **Top-Level CPU**
+Connects:
+- Datapath  
+- Controller  
+- IMEM  
+- DMEM  
 
-Status:  Verified
+Status: Fully functional CPU simulation achieved.
 
-Instruction Memory (IMEM)
+---
 
-64 × 32-bit memory
+## CPU Architecture (Images to Upload on GitHub Later)
 
-Loads program using memfile.dat
+### Datapath Diagram  
+<img width="1016" height="693" alt="Screenshot 2025-11-24 130530" src="https://github.com/user-attachments/assets/5457852c-b883-4222-80a8-0b2233f0df48" />
 
-Status:  Fully working in EDAPlayground
 
-Note: Vivado requires memfile.dat in simulation directory
+### RTL Architecture  
+<img width="1563" height="698" alt="Screenshot 2025-11-24 130320" src="https://github.com/user-attachments/assets/98c7dd41-5c3c-4398-b52e-3a695c05dd43" />
 
-Data Memory (DMEM)
 
-64 × 32-bit RAM
+---
 
-Controlled by MemWrite
+## Compliance Checklist
 
-Status:  Verified
+| Feature / Requirement | Status | Notes |
+|----------------------|:------:|-------|
+| 32-bit ALU | Pass | ADD/SUB/AND/OR |
+| ARM Flags N,Z,C,V | Pass | Matches ARM behavior |
+| Register File | Pass | R15 = PC+8 |
+| Datapath | Pass | Verified |
+| Instruction Memory | Pass | Loads from memfile.dat |
+| Data Memory | Pass | Read/Write OK |
+| EDAPlayground CPU Run | Pass | Fully successful |
+| Vivado Compatibility | InProgress | memfile.dat must be placed manually |
+| Testbench | Pass | Clock/Reset + CPU integration |
 
-CPU Top
+---
 
-Integrates:
+## Directory Structure
 
-Datapath
+```
+ARM32_BIT_CPU/
+│── adder.v
+│── alu.v
+│── condlogic.v
+│── condcheck.v
+│── controller.v
+│── cpu.v
+│── datapath.v
+│── decoder.v
+│── dmem.v
+│── extend.v
+│── flopr.v
+│── flopenr.v
+│── imem.v
+│── memfile.dat
+│── mux2.v
+│── regfile.v
+│── testbench.sv
+│── top.v
+└── README.md
+```
 
-Controller
+---
 
-IMEM
+## Simulation Instructions
 
-DMEM
+###  Full CPU Simulation (EDAPlayground)  
+https://www.edaplayground.com/x/Hk54
 
-Status:  Fully operational in EDAPlayground
+###  Waveform Viewer (EPWave)  
+https://www.edaplayground.com/launchEpwave
 
-Compliance Checklist
-Specification	Status	Notes
-32-bit ALU	 Pass	ADD, SUB, AND, OR
-ARM flags (N,Z,C,V)	 Pass	Correct updates
-Register File	 Pass	R15 outputs PC+8
-Datapath	 Pass	Fully functional
-Instruction Fetch	 Pass	memfile.dat
-Memory Operations	 Pass	DMEM verified
-Full CPU Execution	 Pass	EDAPlayground
-Vivado Compatibility	 Partial	memfile.dat path issue
-Testbench Coverage	 Pass	Clock, reset, signals
-Local Simulation Commands (ALL MODULES)
+---
 
-Below are clean commands for Icarus Verilog (iverilog) so users can simulate without Vivado.
+## Vivado Simulation (Windows)
 
-1. ALU Simulation
-cd ALU
-iverilog -g2012 alu.sv alu_tb.sv -o alu_tb.out
-vvp alu_tb.out
-gtkwave alu.vcd
+###  Important  
+Vivado does **not** automatically detect memfile.dat.  
+You must place it manually here:
 
-2. Datapath Simulation
-cd DATAPATH
-iverilog -g2012 datapath.sv alu.sv regfile.sv mux2.sv extender.sv flopr.sv flopenr.sv adder.sv datapath_tb.sv -o datapath_tb.out
-vvp datapath_tb.out
-gtkwave datapath.vcd
+```
+PROJECT_NAME.srcs/sim_1/imports/memfile.dat
+```
+---
 
-3. Controller + Decoder Simulation
-cd CONTROLLER
-iverilog -g2012 controller.sv decoder.sv condlogic.sv condcheck.sv flopenr.sv controller_tb.sv -o controller_tb.out
-vvp controller_tb.out
-gtkwave controller.vcd
+## Project Status
 
-4. IMEM Simulation
-cd IMEM
-iverilog -g2012 imem.sv imem_tb.sv -o imem_tb.out
-vvp imem_tb.out
-gtkwave imem.vcd
+-  All RTL modules implemented  
+-  Full CPU simulation successful on EDAPlayground  
+-  ALU and Datapath verified on Vivado  
+-  Register file, memory, decoder, controller verified  
+-  Suitable for portfolio, resume, and interviews  
+-  Vivado requires proper memfile.dat placement  
 
-5. DMEM Simulation
-cd DMEM
-iverilog -g2012 dmem.sv dmem_tb.sv -o dmem_tb.out
-vvp dmem_tb.out
-gtkwave dmem.vcd
+---
 
-6. Full CPU Simulation (TOP + CPU)
+## Results
 
-This runs the complete ARM32-bit CPU exactly like EDAPlayground.
+### Edaplayground Simulation Result
+<img width="1913" height="415" alt="image" src="https://github.com/user-attachments/assets/cec2a436-224a-4a70-88ff-80a526673a41" />
 
-cd CPU
-iverilog -g2012 top.sv cpu.sv datapath.sv controller.sv extend.sv alu.sv regfile.sv mux2.sv flopr.sv flopenr.sv imem.sv dmem.sv testbench.sv -o cpu_tb.out
-vvp cpu_tb.out
-gtkwave cpu.vcd
 
+### Vivado ALU Waveform  
+<img width="1915" height="987" alt="Screenshot 2025-11-24 124904" src="https://github.com/user-attachments/assets/51791160-d780-44f0-ad7e-9beaf3e080af" />
 
- This simulation shows:
 
-PC updates
+---
+## License
+Released under the **MIT License**.
 
-Instruction fetch
+---
 
-ALU operations
+## Acknowledgments
+This project is derived from the educational ARM architecture presented in **Digital Design and Computer Architecture — ARM Edition** (Harris & Harris).  
+Verified using **Vivado**, **Icarus Verilog**, and **EDAPlayground**.  
+---
 
-Register writes
-
-Memory activity
-
-Final results
-
-EDAPlayground Simulation
-Full CPU
-
- https://www.edaplayground.com/x/Hk54
-
-Waveform Viewer
-
- https://www.edaplayground.com/launchEpwave
-
-These show a successful full CPU execution with correct PC, ALU, IMEM, DMEM, and register activity.
-
-Design & Verification Flow
-
-RTL Design: Verilog + SystemVerilog
-
-Simulation: Vivado + Icarus Verilog
-
-Waveforms: Vivado Waveform Viewer + EPWave
-
-Memory Initialization: memfile.dat
-
-Testing:
-
-ALU test (individual)
-
-Register file test
-
-Datapath test
-
-Controller test
-
-CPU full integration
-
-Outcome
-
-✔ ALU verified
-✔ Datapath functional
-✔ Controller working
-✔ IMEM loads instructions
-✔ DMEM performs writes
-✔ CPU runs successfully on EDAPlayground
-✔ Ready for GitHub & résumé
-
-Acknowledgments
-
-This project is inspired by Digital Design and Computer Architecture — ARM Edition (Harris & Harris).
-Thanks to:
-
-EDAPlayground for quick simulation
-
-Vivado 2025.1 for RTL debugging
-
-FPGA/VLSI open-source community
-
-License
-
-Released under the MIT License.
-See LICENSE for details.
